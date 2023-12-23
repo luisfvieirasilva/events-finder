@@ -26,6 +26,24 @@ Art Event Finder is a dynamic platform designed to connect art enthusiasts with 
 - Utilization of message queues for background processing and notifications
 - Leveraging external APIs for social media integration and event data extraction
 
-## Getting Started
+## Running the project
 
-**TODO**
+### Prerequisites
+- [Docker](https://docs.docker.com/desktop/?_gl=1*ah4slm*_ga*MTYzNTIzOTQ5Mi4xNzAzMjkyOTU3*_ga_XJWPQMJYHQ*MTcwMzM2OTc2My4zLjEuMTcwMzM2OTc2OC41NS4wLjA.)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+Configure your envs by copying `.env.example` to `.env` and setting it accordingly
+```
+cp .env.example .env
+```
+
+Start all services
+```
+docker-compose up
+```
+
+If it's your first time running the project, create a new Realm on KeyCloak
+- Go to `127.0.0.1:8080`
+- Login to _Administration Console_ using username and password that are configured inside `.env`
+- Click at _Create realm_ at the dropdown menu on the top left
+- Import `events_finder_realm.json` and create it
