@@ -32,9 +32,10 @@ Art Event Finder is a dynamic platform designed to connect art enthusiasts with 
 - [Docker](https://docs.docker.com/desktop/?_gl=1*ah4slm*_ga*MTYzNTIzOTQ5Mi4xNzAzMjkyOTU3*_ga_XJWPQMJYHQ*MTcwMzM2OTc2My4zLjEuMTcwMzM2OTc2OC41NS4wLjA.)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
-Configure your envs by copying `.env.example` to `.env` and setting it accordingly
+Configure your envs files. `.env` is used by docker compose and `config.yml` is used by the server
 ```
 cp .env.example .env
+cp config.yml.example config.yml
 ```
 
 Start all services

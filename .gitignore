@@ -1,1 +1,7 @@
 .env
+config.yml
+
+
+# Added by cargo
+
+/target
