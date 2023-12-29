@@ -24,11 +24,19 @@ services:
       KEYCLOAK_ADMIN: ${KEYCLOAK_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       - keycloak-db
     networks:
       - keycloak-network
+
+  events-finder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: events-finder
+    ports:
+      - "8080:8080"
 
 volumes:
   pgdata:
