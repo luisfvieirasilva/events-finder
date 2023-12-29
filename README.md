@@ -48,3 +48,16 @@ If it's your first time running the project, create a new Realm on KeyCloak
 - Login to _Administration Console_ using username and password that are configured inside `.env`
 - Click at _Create realm_ at the dropdown menu on the top left
 - Import `events_finder_realm.json` and create it
+
+## Development
+
+### Prerequisites
+- [Clippy](https://github.com/rust-lang/rust-clippy?tab=readme-ov-file#usage)
+
+### Git hooks
+
+Configure git pre-push hook to make sure the code is valid before pushing it
+
+```
+ln -s ../../scripts/pre-push.sh .git/hooks/pre-push
+```
