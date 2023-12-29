@@ -44,7 +44,7 @@ docker-compose up
 ```
 
 If it's your first time running the project, create a new Realm on KeyCloak
-- Go to `127.0.0.1:8080`
+- Go to `127.0.0.1:8081`
 - Login to _Administration Console_ using username and password that are configured inside `.env`
 - Click at _Create realm_ at the dropdown menu on the top left
 - Import `events_finder_realm.json` and create it
