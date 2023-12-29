@@ -38,9 +38,10 @@ cp .env.example .env
 cp config.yml.example config.yml
 ```
 
-Start all services
+Build web server image and initialize docker containers
+
 ```
-docker-compose up
+./scripts/build_and_start_docker.sh
 ```
 
 If it's your first time running the project, create a new Realm on KeyCloak
