@@ -1,2 +1,7 @@
 address: "0.0.0.0"
 port: 8080
+
+keycloak_realm: events_finder
+keycloak_client_id: event_finder_web_server
+keycloak_client_secret: <client-secret>
+keycloak_base_url: http://127.0.0.1:8080
