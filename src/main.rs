@@ -5,6 +5,7 @@ mod server_error;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, Result};
 use serde_json::json;
 use server_config::ServerConfig;
+use std::sync::Arc;
 
 use crate::server_error::ServerError;
 
@@ -39,13 +40,13 @@ async fn login(
 }
 
 struct WebServerState {
-    config: ServerConfig,
+    config: Arc<ServerConfig>,
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let server_config =
-        ServerConfig::load("config.yml").expect("Failed to load server configuration");
+        Arc::new(ServerConfig::load("config.yml").expect("Failed to load server configuration"));
 
     let app_data = web::Data::new(WebServerState {
         config: server_config.clone(),
