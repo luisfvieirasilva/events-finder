@@ -1,5 +1,4 @@
 use actix_web::{get, post, web, HttpResponse, Responder, Result};
-use serde_json::json;
 
 use crate::{keycloak, server_error::ServerError, WebServerState};
 
@@ -12,6 +11,11 @@ pub async fn health() -> impl Responder {
 struct LoginRequest {
     username: String,
     password: String,
+}
+
+#[derive(serde::Serialize)]
+struct LoginResponse<'a> {
+    token: &'a str,
 }
 
 #[post("/login")]
@@ -30,5 +34,5 @@ pub async fn login(
         .get_token(&body.username, &body.password)
         .await?;
 
-    Ok(HttpResponse::Ok().json(json!({ "token": token })))
+    Ok(HttpResponse::Ok().json(LoginResponse { token: &token }))
 }
