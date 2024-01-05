@@ -1,43 +1,12 @@
+mod endpoints;
 mod keycloak;
 mod server_config;
 mod server_error;
 
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, Result};
-use serde_json::json;
-use server_config::ServerConfig;
 use std::sync::Arc;
 
-use crate::server_error::ServerError;
-
-#[get("/health")]
-async fn health() -> impl Responder {
-    HttpResponse::Ok().body("OK")
-}
-
-#[derive(serde::Deserialize)]
-struct LoginRequest {
-    username: String,
-    password: String,
-}
-
-#[post("/login")]
-async fn login(
-    state: web::Data<WebServerState>,
-    body: web::Json<LoginRequest>,
-) -> Result<HttpResponse, ServerError> {
-    let keycloak_client = keycloak::KeycloakClient::new(
-        &state.config.keycloak_realm,
-        &state.config.keycloak_client_id,
-        &state.config.keycloak_client_secret,
-        &state.config.keycloak_base_url,
-    );
-
-    let token = keycloak_client
-        .get_token(&body.username, &body.password)
-        .await?;
-
-    Ok(HttpResponse::Ok().json(json!({ "token": token })))
-}
+use actix_web::{web, App, HttpServer};
+use server_config::ServerConfig;
 
 struct WebServerState {
     config: Arc<ServerConfig>,
@@ -69,8 +38,8 @@ async fn main() -> std::io::Result<()> {
 }
 
 fn create_app_config(cfg: &mut web::ServiceConfig) {
-    cfg.service(health);
-    cfg.service(login);
+    cfg.service(endpoints::health);
+    cfg.service(endpoints::login);
 }
 
 #[cfg(test)]
