@@ -1,11 +1,45 @@
+mod keycloak;
 mod server_config;
+mod server_error;
 
-use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, Result};
+use serde_json::json;
 use server_config::ServerConfig;
+
+use crate::server_error::ServerError;
 
 #[get("/health")]
 async fn health() -> impl Responder {
     HttpResponse::Ok().body("OK")
+}
+
+#[derive(serde::Deserialize)]
+struct LoginRequest {
+    username: String,
+    password: String,
+}
+
+#[post("/login")]
+async fn login(
+    state: web::Data<WebServerState>,
+    body: web::Json<LoginRequest>,
+) -> Result<HttpResponse, ServerError> {
+    let keycloak_client = keycloak::KeycloakClient::new(
+        &state.config.keycloak_realm,
+        &state.config.keycloak_client_id,
+        &state.config.keycloak_client_secret,
+        &state.config.keycloak_base_url,
+    );
+
+    let token = keycloak_client
+        .get_token(&body.username, &body.password)
+        .await?;
+
+    Ok(HttpResponse::Ok().json(json!({ "token": token })))
+}
+
+struct WebServerState {
+    config: ServerConfig,
 }
 
 #[actix_web::main]
@@ -13,9 +47,17 @@ async fn main() -> std::io::Result<()> {
     let server_config =
         ServerConfig::load("config.yml").expect("Failed to load server configuration");
 
-    let server = HttpServer::new(|| App::new().configure(create_app_config))
-        .bind((server_config.address.as_str(), server_config.port))?
-        .run();
+    let app_data = web::Data::new(WebServerState {
+        config: server_config.clone(),
+    });
+
+    let server = HttpServer::new(move || {
+        App::new()
+            .app_data(app_data.clone())
+            .configure(create_app_config)
+    })
+    .bind((server_config.address.as_str(), server_config.port))?
+    .run();
 
     println!(
         "Server running at {}:{}",
@@ -27,6 +69,7 @@ async fn main() -> std::io::Result<()> {
 
 fn create_app_config(cfg: &mut web::ServiceConfig) {
     cfg.service(health);
+    cfg.service(login);
 }
 
 #[cfg(test)]
