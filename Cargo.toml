@@ -7,5 +7,8 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4"
+awc = "3.3.0"
 config = "0.13.4"
+derive_more = { version = "1.0.0-beta.6", features = ["display"] }
 serde = { version = "1.0.193", features = ["derive"] }
+serde_json = "1.0.110"
