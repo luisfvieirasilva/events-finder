@@ -1,10 +1,15 @@
 use config::{Config, ConfigError, Environment, File};
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct ServerConfig {
     pub address: String,
     pub port: u16,
+
+    pub keycloak_realm: String,
+    pub keycloak_client_id: String,
+    pub keycloak_client_secret: String,
+    pub keycloak_base_url: String,
 }
 
 impl ServerConfig {
