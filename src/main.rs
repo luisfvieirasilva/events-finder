@@ -1,12 +1,18 @@
+mod claims;
 mod endpoints;
 mod keycloak;
 mod server_config;
 mod server_error;
 
+use std::collections::HashSet;
 use std::sync::Arc;
 
-use actix_web::{web, App, HttpServer};
+use actix_web::Error as ActixError;
+use actix_web::{dev::ServiceRequest, web, App, HttpServer};
+use actix_web_grants::GrantsMiddleware;
 use server_config::ServerConfig;
+
+static CONFIG_FILE: &str = "config.yml";
 
 struct WebServerState {
     config: Arc<ServerConfig>,
@@ -15,7 +21,9 @@ struct WebServerState {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let server_config =
-        Arc::new(ServerConfig::load("config.yml").expect("Failed to load server configuration"));
+        Arc::new(ServerConfig::load(CONFIG_FILE).expect("Failed to load server configuration"));
+
+    claims::initialize();
 
     let app_data = web::Data::new(WebServerState {
         config: server_config.clone(),
@@ -37,9 +45,22 @@ async fn main() -> std::io::Result<()> {
     server.await
 }
 
+async fn grants_extractor(req: &mut ServiceRequest) -> Result<HashSet<String>, ActixError> {
+    let claims = req.extract::<claims::Claims>().await?;
+
+    Ok(HashSet::from_iter(
+        claims.realm_access.roles.clone().into_iter(),
+    ))
+}
+
 fn create_app_config(cfg: &mut web::ServiceConfig) {
     cfg.service(endpoints::health);
     cfg.service(endpoints::login);
+    cfg.service(
+        web::scope("")
+            .wrap(GrantsMiddleware::with_extractor(grants_extractor))
+            .service(endpoints::whoami),
+    );
 }
 
 #[cfg(test)]
