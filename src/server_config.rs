@@ -10,6 +10,7 @@ pub struct ServerConfig {
     pub keycloak_client_id: String,
     pub keycloak_client_secret: String,
     pub keycloak_base_url: String,
+    pub keycloak_jwt_public_key: String,
 }
 
 impl ServerConfig {
