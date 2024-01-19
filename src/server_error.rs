@@ -70,4 +70,14 @@ impl ServerError {
             origin: Some(origin.to_string()),
         }
     }
+
+    pub fn unable_to_decode_token(origin: &str) -> ServerError {
+        ServerError {
+            status_code: StatusCode::INTERNAL_SERVER_ERROR,
+            message: "Unable to decode token",
+            error_code: 3,
+            internal_error: true,
+            origin: Some(origin.to_string()),
+        }
+    }
 }
