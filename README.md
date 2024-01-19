@@ -62,3 +62,28 @@ Configure git pre-push hook to make sure the code is valid before pushing it
 ```
 ln -s ../../scripts/pre-push.sh .git/hooks/pre-push
 ```
+
+### Configuration details
+
+#### Server
+
+- address: Address where the server is connected to
+- port: Port where the server is connected to
+
+#### Keycloak
+
+- keycloak_realm: Target keycloak realm. Use config.yml.example value if you're using `events_finder_realm.json` to create the realm
+- keycloak_client_id: Client it used by the server to connect to keycloak. Use config.yml.example value if you're using `events_finder_realm.json` to create the realm
+- keycloak_client_secret: Client secret required to use the client. To get it do the following steps:
+  - Go to Keycloak admin console
+  - Select the realm configured by `keycloak_realm` config
+  - At _Clients_ menu, select the client configured by `keycloak_client_id` config
+  - At _Credentials_ tab, you'll find the _Client Secret_
+  - Replace `<client-secret>` by the secret
+- keycloak_base_url: Keycloak's address. Use config.yml.example value if you're running keycloak configured at docker-compose.yml
+- keycloak_jwt_public_key: Keycloak realm's RS256 public key. To get it do the following steps:
+  - Go to Keycloak admin console
+  - Select the realm configured by `keycloak_realm` config
+  - At _Realm settings" menu, go to _Keys_ tab
+  - Get the RS256 public key
+  - Replace `<jwt-public-key>` by the key
