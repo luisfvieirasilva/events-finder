@@ -41,3 +41,15 @@ pub async fn login(
 
     Ok(HttpResponse::Ok().json(LoginResponse { token: &token }))
 }
+
+#[derive(serde::Serialize)]
+struct WhoamiResponse<'a> {
+    username: &'a str,
+}
+
+#[get("/whoami")]
+pub async fn whoami(claims: Claims) -> impl Responder {
+    HttpResponse::Ok().json(WhoamiResponse {
+        username: &claims.username,
+    })
+}
