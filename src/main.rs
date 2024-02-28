@@ -46,11 +46,14 @@ async fn main() -> std::io::Result<()> {
 }
 
 async fn grants_extractor(req: &mut ServiceRequest) -> Result<HashSet<String>, ActixError> {
-    let claims = req.extract::<claims::Claims>().await?;
+    let claims = req.extract::<claims::Claims>().await;
 
-    Ok(HashSet::from_iter(
-        claims.realm_access.roles.clone().into_iter(),
-    ))
+    match claims {
+        Ok(claims) => Ok(HashSet::from_iter(
+            claims.realm_access.roles.clone().into_iter(),
+        )),
+        Err(_) => Ok(HashSet::new()),
+    }
 }
 
 fn create_app_config(cfg: &mut web::ServiceConfig) {
