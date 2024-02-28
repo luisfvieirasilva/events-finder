@@ -17,6 +17,7 @@ pub struct ServerError {
 impl ResponseError for ServerError {
     fn error_response(&self) -> HttpResponse {
         let mut response_builder = HttpResponse::build(self.status_code());
+        println!("Error response: {:?}", self);
         match self.internal_error {
             true => response_builder.json(json!(
             {
@@ -51,6 +52,7 @@ impl ServerError {
             origin: None,
         }
     }
+
     pub fn fail_to_communicate_with_keycloak(origin: &str) -> ServerError {
         ServerError {
             status_code: StatusCode::INTERNAL_SERVER_ERROR,
