@@ -17,6 +17,7 @@ pub struct ServerError {
 impl ResponseError for ServerError {
     fn error_response(&self) -> HttpResponse {
         let mut response_builder = HttpResponse::build(self.status_code());
+        println!("Error response: {:?}", self);
         match self.internal_error {
             true => response_builder.json(json!(
             {
@@ -51,6 +52,7 @@ impl ServerError {
             origin: None,
         }
     }
+
     pub fn fail_to_communicate_with_keycloak(origin: &str) -> ServerError {
         ServerError {
             status_code: StatusCode::INTERNAL_SERVER_ERROR,
@@ -78,6 +80,16 @@ impl ServerError {
             error_code: 3,
             internal_error: true,
             origin: Some(origin.to_string()),
+        }
+    }
+
+    pub fn user_already_exists() -> ServerError {
+        ServerError {
+            status_code: StatusCode::CONFLICT,
+            message: "User already exists",
+            error_code: 1001,
+            internal_error: false,
+            origin: None,
         }
     }
 }

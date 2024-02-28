@@ -25,13 +25,15 @@ pub async fn login(
 ) -> Result<HttpResponse, ServerError> {
     let keycloak_client = keycloak::KeycloakClient::new(
         &state.config.keycloak_realm,
-        &state.config.keycloak_client_id,
-        &state.config.keycloak_client_secret,
+        &state.config.keycloak_user_client_id,
+        &state.config.keycloak_user_client_secret,
+        &state.config.keycloak_admin_client_id,
+        &state.config.keycloak_admin_client_secret,
         &state.config.keycloak_base_url,
     );
 
     let token = keycloak_client
-        .get_token(&body.username, &body.password)
+        .get_user_token(&body.username, &body.password)
         .await?;
 
     let decoded_token = crate::claims::decode_jwt(&token);
@@ -40,6 +42,33 @@ pub async fn login(
     }
 
     Ok(HttpResponse::Ok().json(LoginResponse { token: &token }))
+}
+
+#[derive(serde::Deserialize)]
+struct UsersRegisterRequest {
+    username: String,
+    password: String,
+}
+
+#[post("/users/register")]
+pub async fn users_register(
+    state: web::Data<WebServerState>,
+    body: web::Json<UsersRegisterRequest>,
+) -> Result<HttpResponse, ServerError> {
+    let keycloak_client = keycloak::KeycloakClient::new(
+        &state.config.keycloak_realm,
+        &state.config.keycloak_user_client_id,
+        &state.config.keycloak_user_client_secret,
+        &state.config.keycloak_admin_client_id,
+        &state.config.keycloak_admin_client_secret,
+        &state.config.keycloak_base_url,
+    );
+
+    keycloak_client
+        .create_user(&body.username, &body.password)
+        .await?;
+
+    Ok(HttpResponse::Ok().finish())
 }
 
 #[derive(serde::Serialize)]
