@@ -56,6 +56,7 @@ async fn grants_extractor(req: &mut ServiceRequest) -> Result<HashSet<String>, A
 fn create_app_config(cfg: &mut web::ServiceConfig) {
     cfg.service(endpoints::health);
     cfg.service(endpoints::login);
+    cfg.service(endpoints::users_register);
     cfg.service(
         web::scope("")
             .wrap(GrantsMiddleware::with_extractor(grants_extractor))
