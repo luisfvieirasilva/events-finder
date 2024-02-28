@@ -82,4 +82,14 @@ impl ServerError {
             origin: Some(origin.to_string()),
         }
     }
+
+    pub fn user_already_exists() -> ServerError {
+        ServerError {
+            status_code: StatusCode::CONFLICT,
+            message: "User already exists",
+            error_code: 1001,
+            internal_error: false,
+            origin: None,
+        }
+    }
 }
