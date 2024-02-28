@@ -7,8 +7,10 @@ pub struct ServerConfig {
     pub port: u16,
 
     pub keycloak_realm: String,
-    pub keycloak_client_id: String,
-    pub keycloak_client_secret: String,
+    pub keycloak_user_client_id: String,
+    pub keycloak_user_client_secret: String,
+    pub keycloak_admin_client_id: String,
+    pub keycloak_admin_client_secret: String,
     pub keycloak_base_url: String,
     pub keycloak_jwt_public_key: String,
 }

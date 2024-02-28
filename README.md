@@ -73,13 +73,15 @@ ln -s ../../scripts/pre-push.sh .git/hooks/pre-push
 #### Keycloak
 
 - keycloak_realm: Target keycloak realm. Use config.yml.example value if you're using `events_finder_realm.json` to create the realm
-- keycloak_client_id: Client it used by the server to connect to keycloak. Use config.yml.example value if you're using `events_finder_realm.json` to create the realm
-- keycloak_client_secret: Client secret required to use the client. To get it do the following steps:
+- keycloak_user_client_id: Client it used by the server to connect to keycloak as the user. Use config.yml.example value if you're using `events_finder_realm.json` to create the realm
+- keycloak_user_client_secret: Client secret required to use the user client. To get it do the following steps:
   - Go to Keycloak admin console
   - Select the realm configured by `keycloak_realm` config
-  - At _Clients_ menu, select the client configured by `keycloak_client_id` config
+  - At _Clients_ menu, select the client configured by `keycloak_user_client_id` config
   - At _Credentials_ tab, you'll find the _Client Secret_
   - Replace `<client-secret>` by the secret
+- keycloak_admin_client_id: Client it used by the server to connect to keycloak as the service and with admin roles. Use config.yml.example value if you're using `events_finder_realm.json` to create the realm
+- keycloak_admin_client_secret: Client secret required to use the admin client. To get it follow `keycloak_user_client_secret`'s steps but looking at client configured by `keycloak_admin_client_id`
 - keycloak_base_url: Keycloak's address. Use config.yml.example value if you're running keycloak configured at docker-compose.yml
 - keycloak_jwt_public_key: Keycloak realm's RS256 public key. To get it do the following steps:
   - Go to Keycloak admin console
