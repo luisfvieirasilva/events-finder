@@ -1,6 +1,6 @@
 use actix_web::http::StatusCode;
 
-use crate::server_error::ServerError;
+use crate::{server_config::ServerConfig, server_error::ServerError};
 
 pub struct KeycloakClient {
     realm: String,
@@ -30,6 +30,17 @@ impl KeycloakClient {
             base_url: base_url.to_string(),
             client: awc::Client::default(),
         }
+    }
+
+    pub fn from_server_config(config: &ServerConfig) -> Self {
+        KeycloakClient::new(
+            config.keycloak_realm.as_str(),
+            config.keycloak_user_client_id.as_str(),
+            config.keycloak_user_client_secret.as_str(),
+            config.keycloak_admin_client_id.as_str(),
+            config.keycloak_admin_client_secret.as_str(),
+            config.keycloak_base_url.as_str(),
+        )
     }
 
     pub async fn get_user_token(
