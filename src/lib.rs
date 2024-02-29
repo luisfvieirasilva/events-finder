@@ -12,18 +12,16 @@ use actix_web::{dev::ServiceRequest, web, App, HttpServer};
 use actix_web_grants::GrantsMiddleware;
 use server_config::ServerConfig;
 
-static CONFIG_FILE: &str = "config.yml";
-
 struct WebServerState {
     config: Arc<ServerConfig>,
 }
 
 #[actix_web::main]
-pub async fn run() -> std::io::Result<()> {
+pub async fn run(config_file: &str) -> std::io::Result<()> {
     let server_config =
-        Arc::new(ServerConfig::load(CONFIG_FILE).expect("Failed to load server configuration"));
+        Arc::new(ServerConfig::load(config_file).expect("Failed to load server configuration"));
 
-    claims::initialize();
+    claims::initialize(config_file)?;
 
     let app_data = web::Data::new(WebServerState {
         config: server_config.clone(),
