@@ -23,14 +23,7 @@ pub async fn login(
     state: web::Data<WebServerState>,
     body: web::Json<LoginRequest>,
 ) -> Result<HttpResponse, ServerError> {
-    let keycloak_client = keycloak::KeycloakClient::new(
-        &state.config.keycloak_realm,
-        &state.config.keycloak_user_client_id,
-        &state.config.keycloak_user_client_secret,
-        &state.config.keycloak_admin_client_id,
-        &state.config.keycloak_admin_client_secret,
-        &state.config.keycloak_base_url,
-    );
+    let keycloak_client = keycloak::KeycloakClient::from_server_config(&state.config);
 
     let token = keycloak_client
         .get_user_token(&body.username, &body.password)
@@ -55,14 +48,7 @@ pub async fn users_register(
     state: web::Data<WebServerState>,
     body: web::Json<UsersRegisterRequest>,
 ) -> Result<HttpResponse, ServerError> {
-    let keycloak_client = keycloak::KeycloakClient::new(
-        &state.config.keycloak_realm,
-        &state.config.keycloak_user_client_id,
-        &state.config.keycloak_user_client_secret,
-        &state.config.keycloak_admin_client_id,
-        &state.config.keycloak_admin_client_secret,
-        &state.config.keycloak_base_url,
-    );
+    let keycloak_client = keycloak::KeycloakClient::from_server_config(&state.config);
 
     keycloak_client
         .create_user(&body.username, &body.password)
