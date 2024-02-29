@@ -13,6 +13,5 @@ chrono = "0.4.31"
 config = "0.13.4"
 derive_more = { version = "1.0.0-beta.6", features = ["display"] }
 jsonwebtoken = "9.2.0"
-lazy_static = "1.4.0"
 serde = { version = "1.0.193", features = ["derive"] }
 serde_json = "1.0.110"

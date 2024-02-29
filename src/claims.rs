@@ -1,5 +1,5 @@
-use lazy_static::lazy_static;
 use std::future::{ready, Ready};
+use std::sync::OnceLock;
 
 use actix_web::dev::Payload;
 use actix_web::{error::ErrorUnauthorized, FromRequest};
@@ -9,12 +9,17 @@ use serde::{Deserialize, Serialize};
 
 use crate::server_config::ServerConfig;
 
-lazy_static! {
-    static ref DECODING_KEY: DecodingKey = generate_decoding_key();
-}
+static DECODING_KEY: OnceLock<DecodingKey> = OnceLock::new();
 
-pub fn initialize() {
-    lazy_static::initialize(&DECODING_KEY);
+pub fn initialize(config_file: &str) -> std::io::Result<()> {
+    DECODING_KEY
+        .set(generate_decoding_key(config_file))
+        .map_err(|_| {
+            std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "Decoding key already initialized",
+            )
+        })
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -49,9 +54,9 @@ impl FromRequest for Claims {
     }
 }
 
-fn generate_decoding_key() -> DecodingKey {
+fn generate_decoding_key(config_file: &str) -> DecodingKey {
     let server_config =
-        ServerConfig::load(crate::CONFIG_FILE).expect("Failed to load server configuration");
+        ServerConfig::load(config_file).expect("Failed to load server configuration");
     DecodingKey::from_rsa_pem(server_config.keycloak_jwt_public_key.as_bytes())
         .expect("Failed to read JWT public key")
 }
@@ -59,7 +64,12 @@ fn generate_decoding_key() -> DecodingKey {
 pub fn decode_jwt(token: &str) -> Result<Claims, Error> {
     let mut validation = Validation::new(jsonwebtoken::Algorithm::RS256);
     validation.set_audience(&["account".to_string()]);
-    jsonwebtoken::decode::<Claims>(token, &DECODING_KEY, &validation)
+
+    let decoding_key = DECODING_KEY
+        .get()
+        .ok_or_else(|| ErrorUnauthorized("Decoding key not initialized"))?;
+
+    jsonwebtoken::decode::<Claims>(token, decoding_key, &validation)
         .map(|data| data.claims)
         .map_err(|e| ErrorUnauthorized(e.to_string()))
 }
